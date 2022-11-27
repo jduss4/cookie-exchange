@@ -1,0 +1,15 @@
+{
+  "name": "cookies",
+  "version": "0.0.1",
+  "description": "Script for cookies",
+  "main": "cookies.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Jessica Dussault",
+  "license": "",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "mocha": "^10.1.0"
+  }
+}
