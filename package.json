@@ -9,7 +9,9 @@
   "author": "Jessica Dussault",
   "license": "",
   "dependencies": {
-    "lodash": "^4.17.21",
+    "shuffle-seed": "^1.1.6"
+  },
+  "devDependencies": {
     "mocha": "^10.1.0"
   }
 }

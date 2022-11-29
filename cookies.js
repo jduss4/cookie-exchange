@@ -1,16 +1,14 @@
-var _ = require('lodash');
-
+var shuffleSeed = require('shuffle-seed');
 
 // Read a CSV in
 
 // For anybody who said they would make two batches
 //   make them a second entry in the big list
 
-// Now, we're gonna do something kinda wild.
-//   We're gonna build a matrix. I already have regrets.
+// This script does something kinda wild.
+//   We're gonna use a matrix. I may have regrets.
 //   I blame my friend Wesley, a mathy person, for the idea.
-
-// We'll need an array of arrays, NxN where N
+//   We'll use an array of arrays, NxN where N
 //   is the number of batches being made
 
 let haveDietMatch = (batch1, batch2) => {
@@ -21,6 +19,8 @@ let checkDietReq = (eater, baker) => {
   return (!eater["eater+"] || eater["eater+"] && baker["baker+"]);
 }
 
+// regardless of whether this is batch 1 or 2, we don't want the same
+// person matched up against themselves
 let areDifferentPeople = (rbatch, cbatch) => {
   return rbatch["email"] != cbatch["email"];
 }
@@ -38,13 +38,15 @@ let createBatches = (formResults) => {
   var batches = []
   for (var row in formResults) {
     var batchNum = formResults[row]["batches"];
-    for (var i = 0; i < batchNum; i++) {
-      batches.push(formResults[row])
+    for (var i = 1; i <= batchNum; i++) {
+      // clone the formResults object
+      var individual = Object.create(formResults[row])
+      // add a batch number to help with understanding match ups later
+      individual["batchNum"] = i
+      batches.push(individual)
     }
   }
-  // shuffle the batches so that pairing isn't determined
-  // by the order in which the form was filled out
-  return _.shuffle(batches);
+  return shuffle(batches)
 }
 
 let createMatrix = (batches) => {
@@ -58,12 +60,31 @@ let createMatrix = (batches) => {
   return matrix;
 }
 
+let getResults = (matrix, batches) => {
+  // make a shallow copy of the matrix
+  var peopleChecklist = Array(matrix.length)
+
+  // handy debug line if you want to get a list of the people
+  // console.log(batches.map(person => person["name"] + person["batchNum"]))
+  for (var rindex = 0; rindex < matrix.length; rindex++) {
+    // find the index of the first (and hopefully only) "true" value in a row
+    var cindex = matrix[rindex].findIndex(column => column);
+    person1 = batches[rindex]
+    person2 = batches[cindex]
+    if (person1 && person2) {
+      console.log("Pair: " + person1["name"] + person1["batchNum"] + " " + person2["name"] + person2["batchNum"])
+    } else {
+      console.log("Person " + batches[rindex]["name"] + " has no match")
+    }
+  }
+}
+
 let main = (results) => {
-  var batches = createBatches(results)
+  var batches = createBatches(results);
   var emptyMatrix = createMatrix(batches);
-  var completeMatrix = matchBatches(emptyMatrix, batches)
-  console.log(completeMatrix)
-  printResults(completeMatrix, batches)
+  var completeMatrix = matchBatches(emptyMatrix, batches);
+  var results = getResults(completeMatrix, batches);
+  printResults(completeMatrix, results)
 }
 
 // iterate through each element of the matrix, checking
@@ -83,24 +104,21 @@ let matchBatches = (matrix, batches) => {
 }
 
 let printResults = (matrix, batches) => {
-  for (var rindex = 0; rindex < matrix.length; rindex++) {
-    // find the index of the first (hopefully only) "true" value in a row
-    var cindex = matrix[rindex].findIndex(column => column);
-    person1 = batches[rindex]
-    person2 = batches[cindex]
-    if (person1 && person2) {
-      console.log("Pair: " + person1["name"] + " " + person2["name"])
-    } else {
-      console.log("Person " + batches[rindex]["name"] + " has no match")
-    }
-  }
+  console.log("just for fun, this is what your matrix looks like")
+  console.log(matrix)
+}
+
+let shuffle = (batches) => {
+  // shuffle the batches so that pairing isn't determined
+  // by the order in which the form was filled out
+  return shuffleSeed.shuffle(batches, "cookie");
 }
 
 let validateMatch = (matrix, batches, rindex, cindex) => {
   // if both batches are different person
   // and there are complementary dietary needs
-  // and this row does not contain a match
-  // and this column does not contain a match
+  // and this row does not already contain a match
+  // and this column does not already contain a match
   let rbatch = batches[rindex];
   let cbatch = batches[cindex];
 
