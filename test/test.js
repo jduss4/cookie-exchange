@@ -38,30 +38,23 @@ describe('#haveDietMatch', function() {
   });
 });
 
-describe('#createBatches', function() {
+describe('#createMatrixBatches', function() {
   describe('normal scenario', function() {
     it('should return something', function() {
-      var batches = cookies.createBatches(fixtures.normalScenario);
+      var batches = cookies.createMatrixBatches(fixtures.normalScenario);
       assert.equal(batches.length, 5)
     });
   });
 });
 
-describe('#main', function() {
-  it('testing', function() {
-    cookies.main(fixtures.normalScenario);
+describe('#cookieTime', function() {
+  it('should run the script with fake data', function() {
+    cookies.cookieTime(fixtures.normalScenario);
   })
 })
 
 // future home of integration tests
-describe('Even numbered participants', function() {
-  describe('No people with dietary requirements', function() {
-    it.skip('Has no duplicate pairs', function() {
-      assert(pairs.uniq);
-    });
 
-    it.skip('Length is half the total amount of cookie batches', function() {
-      assert.equal(pairs.length, batches.length/2);
-    })
-  });
-});
+// test that there aren't duplicate batches
+// test that people with two batches are matched twice
+// test dietary matchups

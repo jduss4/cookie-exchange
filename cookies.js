@@ -2,9 +2,6 @@ var shuffleSeed = require('shuffle-seed');
 
 // Read a CSV in
 
-// For anybody who said they would make two batches
-//   make them a second entry in the big list
-
 // This script does something kinda wild.
 //   We're gonna use a matrix. I may have regrets.
 //   I blame my friend Wesley, a mathy person, for the idea.
@@ -34,15 +31,30 @@ let checkMatrixRow = (matrix, rindex) => {
   return matrix[rindex].includes(true)
 }
 
-let createBatches = (formResults) => {
+let cookieTime = (formResults) => {
+  var matrixBatches = createMatrixBatches(formResults);
+  var matrix = createMatrix(matrixBatches);
+  var results = getResults(matrix, matrixBatches);
+  printResults(results)
+}
+
+let createMatrixBatches = (formResults) => {
   var batches = []
   for (var row in formResults) {
     var batchNum = formResults[row]["batches"];
     for (var i = 1; i <= batchNum; i++) {
-      // clone the formResults object
-      var individual = Object.create(formResults[row])
-      // add a batch number to help with understanding match ups later
-      individual["batchNum"] = i
+      // TODO I have had such rotten luck trying to clone
+      // this object so that it won't screw up later in the
+      // script. I give up, JavaScript, you win, I'll just
+      // freaking make an entirely new object, are you happy?
+      var individual = {
+        "name" : formResults[row]["name"],
+        "email" : formResults[row]["email"],
+        "eater+" : formResults[row]["eater+"],
+        "baker+" : formResults[row]["baker+"],
+        "batches" : formResults[row]["batches"],
+        "batchNum" : i
+      }
       batches.push(individual)
     }
   }
@@ -57,34 +69,35 @@ let createMatrix = (batches) => {
   for (var i = 0; i < batchNum; i++) {
     matrix.push(Array(batchNum));
   }
-  return matrix;
+  return matchBatches(matrix, batches);
 }
 
 let getResults = (matrix, batches) => {
   // make a shallow copy of the matrix
-  var peopleChecklist = Array(matrix.length)
+  var results = {
+    "matched" : [],
+    "unmatched": []
+  }
 
   // handy debug line if you want to get a list of the people
   // console.log(batches.map(person => person["name"] + person["batchNum"]))
   for (var rindex = 0; rindex < matrix.length; rindex++) {
+    var person1 = batches[rindex];
     // find the index of the first (and hopefully only) "true" value in a row
     var cindex = matrix[rindex].findIndex(column => column);
-    person1 = batches[rindex]
-    person2 = batches[cindex]
-    if (person1 && person2) {
-      console.log("Pair: " + person1["name"] + person1["batchNum"] + " " + person2["name"] + person2["batchNum"])
-    } else {
-      console.log("Person " + batches[rindex]["name"] + " has no match")
+
+    // if a row's index is greater than the column's index
+    // then you know we already got this result from the matching entry in the matrix
+    if (cindex === -1) {
+      // console.log("Person " + person1["name"] + person1["batchNum"] + " has no match")
+      results["unmatched"].push(person1);
+    } else if (rindex < cindex) {
+      var person2 = batches[cindex];
+      // console.log("Pair: " + person1["name"] + person1["batchNum"] + " " + person2["name"] + person2["batchNum"])
+      results["matched"].push([person1, person2])
     }
   }
-}
-
-let main = (results) => {
-  var batches = createBatches(results);
-  var emptyMatrix = createMatrix(batches);
-  var completeMatrix = matchBatches(emptyMatrix, batches);
-  var results = getResults(completeMatrix, batches);
-  printResults(completeMatrix, results)
+  return results;
 }
 
 // iterate through each element of the matrix, checking
@@ -103,9 +116,35 @@ let matchBatches = (matrix, batches) => {
   return matrix;
 }
 
-let printResults = (matrix, batches) => {
-  console.log("just for fun, this is what your matrix looks like")
-  console.log(matrix)
+//////////////////////
+// TODO this is where something nice should spit out,
+// like a series of emails with the people addressed already, etc
+//////////////////////
+let printResults = (results) => {
+  // uncomment to print out the JSON itself
+  // console.log(JSON.stringify(results, null, 4))
+  results["matched"].forEach( pair => {
+    var p1 = pair[0];
+    var p2 = pair[1];
+    var msg = `
+    ------------
+    Dear ${p1["name"]} and ${p2["name"]},
+    You have been matched up as partners for the cookie exchange!
+
+    TODO: debug lines to make sure diets look okay
+    ${p1["name"]} has a dietary restriction: ${p1["eater+"]}
+    ${p2["name"]} has a dietary restriction: ${p2["eater+"]}
+
+    ${p1["name"]} accommodates dietary restriction: ${p1["baker+"]}
+    ${p2["name"]} accommodates dietary restriction: ${p2["baker+"]}
+    ------------
+    `;
+    console.log(msg)
+  })
+
+  results["unmatched"].forEach( sadPerson => {
+    console.log("PLEASE FIND A MATCH FOR THIS PERSON: " + sadPerson["name"])
+  })
 }
 
 let shuffle = (batches) => {
@@ -130,7 +169,7 @@ let validateMatch = (matrix, batches, rindex, cindex) => {
 }
 
 module.exports = {
-  haveDietMatch: haveDietMatch,
-  createBatches: createBatches,
-  main: main
+  cookieTime: cookieTime,
+  createMatrixBatches: createMatrixBatches,
+  haveDietMatch: haveDietMatch
 }
