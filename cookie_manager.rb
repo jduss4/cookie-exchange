@@ -98,10 +98,25 @@ class CookieManager
   def printReport
     puts "Pairs:"
     @matched.each do |pair|
-      puts "#{pair[0]["name"]} and #{pair[1]["name"]}"
+      p1 = pair[0]
+      p2 = pair[1]
+      puts "Email: #{p1["email"]}, #{p2["email"]}"
+      puts %{
+Hello #{p1["name"]} and #{p2["name"]},
+
+You will be exchanging cookies for this year's TTS cookie exchange!
+
+Please trade addresses, talk accommodations, and plan any other aspects
+of exchanging delicious cookies.
+
+Let Heather B know if you have any questions, and have fun!
+
+Sincerely,
+
+}
     end
 
-    puts "Unmatched or in need of de-duping"
+    puts "\n-----------------\nUnmatched or in need of de-duping"
     @unmatched.each do |person|
       puts "#{person["name"]}"
     end

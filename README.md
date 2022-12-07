@@ -33,4 +33,4 @@ Eater+
 Baker+
 ```
 
-Run `./cookies.rb` to run the script! It will return a list of pairs of people followed by a bunch of email content templates you may use, and then any people without matches will be listed at the bottom.
+Run `./cookies.rb` to run the script! It will return a bunch of email content templates you may use, and then any people without matches will be listed at the bottom.
