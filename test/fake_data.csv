@@ -1,0 +1,5 @@
+Timestamp,Your name,Your personal email address,How many batches of cookies would you like to make?,"Dietary requirements (this personal time, personal funds project cannot guarantee nut- or gluten-free kitchens; you assume your own risk, etc.)    ",Eater+,Baker+
+11/18/2022 15:07:59,PersonA,personA@gmail.com,1,,FALSE,FALSE
+11/18/2022 15:08:40,PersonB,personB@gmail.com,1,I can accommodate dietary requirements if provided to me.,FALSE,TRUE
+11/18/2022 15:09:44,PersonC,personC@gmail.com,1,"I have dietary requirements I will provide to the person I’m matched with., I can accommodate dietary requirements if provided to me.",TRUE,TRUE
+11/18/2022 15:23:35,PersonD,personD@gmail.com,2,,FALSE,FALSE
