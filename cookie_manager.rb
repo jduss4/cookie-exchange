@@ -41,6 +41,13 @@ class CookieManager
     end
   end
 
+  def debugPersonDiet(p)
+    report = p["name"]
+    report << " eater+" if p["eater+"]
+    report << " baker+" if p["baker+"]
+    report
+  end
+
   def emptyMatrix
     # create an array of arrays representing each batch
     # matched up with another batch
@@ -100,20 +107,22 @@ class CookieManager
     @matched.each do |pair|
       p1 = pair[0]
       p2 = pair[1]
-      puts "Email: #{p1["email"]}, #{p2["email"]}"
-      puts %{
-Hello #{p1["name"]} and #{p2["name"]},
+      # TODO something is wrong in terms of pulling from double batches
+      puts "#{debugPersonDiet(p1)} and #{debugPersonDiet(p2)}"
+#       puts "Email: #{p1["email"]}, #{p2["email"]}"
+#       puts %{
+# Hello #{p1["name"]} and #{p2["name"]},
 
-You will be exchanging cookies for this year's TTS cookie exchange!
+# You will be exchanging cookies for this year's TTS cookie exchange!
 
-Please trade addresses, talk accommodations, and plan any other aspects
-of exchanging delicious cookies.
+# Please trade addresses, talk accommodations, and plan any other aspects
+# of exchanging delicious cookies.
 
-Let Heather B know if you have any questions, and have fun!
+# Let Heather B know if you have any questions, and have fun!
 
-Sincerely,
+# Sincerely,
 
-}
+# }
     end
 
     puts "\n-----------------\nUnmatched or in need of de-duping"
